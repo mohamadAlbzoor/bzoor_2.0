@@ -1,5 +1,8 @@
 package com.example.bzoor_second.models;
 
+import com.example.bzoor_second.services.MyUserDetailsService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,6 +13,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class MyUserDetails implements UserDetails {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MyUserDetails.class);
 
     private String userName;
     private String password;
@@ -23,7 +28,7 @@ public class MyUserDetails implements UserDetails {
         this.authorities = Arrays.stream(user.roles().split(","))
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
-        System.out.println("my user details constructor");
+        LOGGER.debug("my user details constructor");
 
     }
 

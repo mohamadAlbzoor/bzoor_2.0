@@ -1,8 +1,11 @@
 package com.example.bzoor_second.filters;
 
+import com.example.bzoor_second.configurations.SecurityConfiguration;
 import com.example.bzoor_second.handler.ForbiddenException;
 import com.example.bzoor_second.services.MyUserDetailsService;
 import com.example.bzoor_second.utils.JwtUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +23,8 @@ import java.io.IOException;
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtFilter.class);
+
     @Autowired
     private MyUserDetailsService myUserDetailsService;
 
@@ -35,21 +40,19 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (authHeader != null && authHeader.startsWith("Bearer ")){
             jwt = authHeader.substring(7);
+            LOGGER.info("Extracting the JWT from the header ......");
             username = jwtUtil.extractUsername(jwt);
         }
 
         if(username != null && SecurityContextHolder.getContext().getAuthentication() == null){
             UserDetails userDetails = this.myUserDetailsService.loadUserByUsername(username);
             if(jwtUtil.validateToken(jwt, userDetails)){
+                LOGGER.info("The token is valid ......");
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities()
                 );
                 usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-            }
-            else {
-                System.out.println("here  i am !!");
-                throw (new ForbiddenException("this is a forbidden request", new ServletException()));
             }
         }
 

@@ -14,6 +14,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
@@ -24,6 +26,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 //    @Autowired
 //    MyUserDetailsService userDetailsService;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SecurityConfiguration.class);
 
     @Autowired
     UserDetailsService userDetailsService;
@@ -48,7 +52,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        LOGGER.trace("Entering the JWT filter ......");
         http.addFilterBefore(this.jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        LOGGER.trace("The request is filtered ......");
     }
 
     //this just for testing , not good for production

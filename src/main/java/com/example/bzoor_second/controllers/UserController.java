@@ -30,6 +30,15 @@ public class UserController {
     @Autowired
     private JwtUtil jwtToken;
 
+    /**
+     * this method used to authenticate a user using username and password
+     * @param user --> {
+     *             "userName": "String",
+     *             "password": "String"
+     * }
+     * @return AuthenticationResponse
+     * @throws Exception
+     */
     @PostMapping("/authenticate")
     public ResponseEntity<?> createAuthToken(@RequestBody Map<String, Object> user) throws Exception {
         System.out.println(user.get("userName") + " " + user.get("password"));
@@ -45,6 +54,5 @@ public class UserController {
 
         final String jwt = this.jwtToken.generateToken(userDetails);
         return ResponseEntity.ok(new AuthenticationResponse(jwt));
-
     }
 }
